@@ -43,10 +43,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.ImageIcon;
 import java.util.ArrayList;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
+
 import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
 import org.apache.poi.xssf.usermodel.XSSFPicture;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -213,56 +210,54 @@ import org.apache.poi.xssf.usermodel.XSSFShape;
                     System.out.println("Modelo: " + sigfila.getCell(1).getNumericCellValue());
                 }
                 System.out.println("Descripcion: " + sigfila.getCell(2).getStringCellValue());
-            buscarimagen(hoja,sigfila,frames);
+                 // Buscar la imagen
+                 BufferedImage image = buscarImagen(hoja, sigfila);
+                 if (image != null) {
+                // Mostrar la imagen en un JFrame
+                mostrarImagen(image, frames);
+                 }
             }
         }
     }
-    public static void buscarimagen(Sheet hoja, Row sigfila, List<JFrame> frames ){
+   public static BufferedImage buscarImagen(Sheet hoja, Row sigfila) {
+    // Buscar la imagen en la columna E
+    if (hoja instanceof XSSFSheet) {
+        XSSFSheet cashoja = (XSSFSheet) hoja;
+        for (XSSFShape imagenes : cashoja.createDrawingPatriarch().getShapes()) {
+            if (imagenes instanceof XSSFPicture) {
+                XSSFPicture imagen = (XSSFPicture) imagenes;
+                XSSFClientAnchor anchor = imagen.getPreferredSize();
+                int filaimagen1 = anchor.getRow1();
+                int columnaimagen1 = anchor.getCol1();
+                if (filaimagen1 == sigfila.getRowNum() && columnaimagen1 == 4) { // Columna E
+                    byte[] datosimagen = imagen.getPictureData().getData();
 
-        // Buscar la imagen en la columna E
-                if (hoja instanceof XSSFSheet) {
-                    XSSFSheet cashoja = (XSSFSheet) hoja;
-                    for (XSSFShape imagenes : cashoja.createDrawingPatriarch().getShapes()) {
-                        if (imagenes instanceof XSSFPicture) {
-                            XSSFPicture imagen = (XSSFPicture) imagenes;
-                            XSSFClientAnchor anchor = imagen.getPreferredSize();
-                            int filaimagen1 = anchor.getRow1();
-                            int columnaimagen1 = anchor.getCol1();
-                            if (filaimagen1 == sigfila.getRowNum() && columnaimagen1 == 4) { // Columna E
-                                byte[] datosimagen = imagen.getPictureData().getData();
-                            /*crear un panel para mostrar la imagen
-                            JPanel panel=new JPanel(){
-                                private BufferedImage image;
-                                public void setimagen(BufferedImage image){
-                                    this.image=image;
-                                    repaint();
-                                }
-
-                            }*/
-                                // Convierte los bytes de la imagen en una imagen de BufferedImage
-                                try {
-                                    InputStream is = new ByteArrayInputStream(datosimagen);
-                                    BufferedImage image = ImageIO.read(is);
-    
-                                    // Muestra la imagen en un JFrame
-                                    JFrame marco = new JFrame();
-                                    marco.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-                                    JLabel etiqueta = new JLabel(new ImageIcon(image));
-                                    marco.getContentPane().add(etiqueta, BorderLayout.CENTER);
-                                    marco.pack();
-                                    marco.setVisible(true);
-                                    // Añade el marco a la lista de marcos
-                                    frames.add(marco);
-
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
+                    // Convierte los bytes de la imagen en una imagen de BufferedImage
+                    try {
+                        InputStream is = new ByteArrayInputStream(datosimagen);
+                        BufferedImage image = ImageIO.read(is);
+                        return image;
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                 }
             }
-        
+        }
+    }
+    return null;
+}
+
+public static void mostrarImagen(BufferedImage image, List<JFrame> frames) {
+    // Muestra la imagen en un JFrame
+    JFrame marco = new JFrame();
+    marco.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+    JLabel etiqueta = new JLabel(new ImageIcon(image));
+    marco.getContentPane().add(etiqueta, BorderLayout.CENTER);
+    marco.pack();
+    marco.setVisible(true);
+    // Añade el marco a la lista de marcos
+    frames.add(marco);
+}     
     
      public static void buscar(String nombre,Sheet hoja, int columna) {
         
