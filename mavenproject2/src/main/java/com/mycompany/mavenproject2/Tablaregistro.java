@@ -99,7 +99,7 @@ public class Tablaregistro {
             System.out.println(rojo+"Error al guardar el archivo de Excel. Asegúrate de que el archivo no está abierto en otro programa."+reset);
         }
     }
-    public static void registrarCliente(Scanner infu, Sheet hoja,int columna) {
+    private static void registrarCliente(Scanner infu, Sheet hoja,int columna) {
 
         String nombre = leer(infu, "Ingresa el nombre del cliente: ");
     int edad = leerEdad(infu);
@@ -152,8 +152,8 @@ else if (ayuda.equalsIgnoreCase("VIVIENDA")){
                 System.out.println("Edad: " + sigfila.getCell(1).getNumericCellValue());
                 System.out.println("Direccion: " + sigfila.getCell(2).getStringCellValue());
                 System.out.println("Ayuda: " + sigfila.getCell(7).getStringCellValue());
-                System.out.print("Curso:" + sigfila.getCell(3).getStringCellValue());
-                System.out.print("Horario:" + sigfila.getCell(4).getStringCellValue()+reset);
+                System.out.print("Curso: " + sigfila.getCell(3).getStringCellValue()+"  ");
+                System.out.println("Horario: " + sigfila.getCell(4).getStringCellValue()+reset);
                 
                 return;
     }
@@ -235,13 +235,12 @@ else if (ayuda.equalsIgnoreCase("VIVIENDA")){
         return horaInicio + "-" + horaFin;
     }
     public static void celdas(String nombre,int columnanom, int columnacomp,int columnacurso,int columnahor, int columnades, Sheet hoja,String dato,String descripcion){
-        
         for(Row fila:hoja){
             Cell celda=fila.getCell(columnanom);
             if(celda.getCellType()==CellType.STRING&&celda.getStringCellValue().equalsIgnoreCase(nombre)){
                 Cell celdacomp=fila.getCell(columnacomp);
                 Cell celdades=fila.getCell(columnades);
-                if(celdacomp.getCellType()==CellType.BLANK || celdacomp.equals(fila.getCell(3).getStringCellValue()) || celdades.getCellType()==CellType.BLANK || celdades == a ){
+                if(celdacomp == null || celdacomp.getCellType()==CellType.BLANK || celdades == null || celdades.getCellType()==CellType.BLANK){
                     if(celdacomp == null){
                         celdacomp = fila.createCell(columnacomp);
                     }
@@ -254,18 +253,18 @@ else if (ayuda.equalsIgnoreCase("VIVIENDA")){
                     if(celdacomp.getStringCellValue().equalsIgnoreCase(dato)){
                         System.out.println("La hora del 2do curso no puede ser igual a la del 1er curso.");
                         System.out.println("El domicilio ya se encuentra registrado");
-                    }/*else {
+                    }else {
                         Cell celdaguar=fila.createCell(columnahor);
                         celdaguar.setCellValue(dato);
                         Cell celdaguarc=fila.createCell(columnacurso);
                         celdaguarc.setCellValue(descripcion);
-                        System.out.println(celdades);
-                    }*/ 
+                    }
                 }
                 break;
             }
         }
     }
-    
+
+
 
 }
